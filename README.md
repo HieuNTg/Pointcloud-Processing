@@ -29,7 +29,6 @@ pip install -r requirements.txt
 pointcloud_processing/
 ├─ process_pointcloud.py    # Script chính (CLI)
 ├─ requirements.txt         # Thư viện cần thiết
-├─ README.md                # Tập tin này
 ├─ report.pdf               # Báo cáo (nếu có)
 └─ ...
 ```
