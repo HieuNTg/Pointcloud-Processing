@@ -1,0 +1,70 @@
+# Báo cáo Phân tích: Tinh chỉnh và Phân tích Đám mây điểm 3D
+
+## 1. Giới thiệu
+
+Báo cáo này trình bày phương pháp tiếp cận, các thuật toán và tham số đã chọn để xử lý đám mây điểm 3D từ dữ liệu thô sang dữ liệu đã được tinh chỉnh. Mục tiêu chính là khử nhiễu, xoay đám mây điểm về đúng chiều và xác định sàn nhà.
+
+## 2. Phương pháp tiếp cận
+
+### 2.1. Khử nhiễu (Denoising)
+
+Để khử nhiễu từ đám mây điểm, chúng tôi đã triển khai hai phương pháp:
+
+#### a) Statistical Outlier Removal
+Phương pháp này tính khoảng cách trung bình từ mỗi điểm đến k điểm lân cận của nó. Các điểm có khoảng cách trung bình vượt quá ngưỡng (μ + α*σ) sẽ bị coi là nhiễu và bị loại bỏ.
+
+**Tham số đã chọn:**
+- `nb_neighbors = 20`: Số lượng điểm lân cận để tính khoảng cách trung bình
+- `std_ratio = 2.0`: Hệ số nhân với độ lệch chuẩn để xác định ngưỡng
+
+#### b) Radius Outlier Removal
+Phương pháp này đếm số lượng điểm lân cận trong một bán kính xác định. Các điểm có ít hơn số lượng điểm lân cận tối thiểu sẽ bị coi là nhiễu và bị loại bỏ.
+
+**Tham số thay thế (khi chọn phương pháp radius):**
+- `nb_neighbors = 16`: Số lượng điểm lân cận tối thiểu
+- `std_ratio = 0.05`: Bán kính tìm kiếm
+
+### 2.2. Phân đoạn sàn nhà (Floor Segmentation)
+
+Để xác định sàn nhà, chúng tôi sử dụng thuật toán RANSAC (Random Sample Consensus) để tìm mặt phẳng lớn nhất trong đám mây điểm. Mặt phẳng này thường là sàn nhà trong các cảnh quét 3D.
+
+**Tham số đã chọn:**
+- `distance_threshold = 0.02`: Ngưỡng khoảng cách tối đa từ một điểm đến mặt phẳng để được coi là thuộc mặt phẳng đó
+- `ransac_n = 3`: Số lượng điểm để ước tính một mặt phẳng
+- `num_iterations = 1000`: Số lần lặp tối đa của thuật toán RANSAC
+
+### 2.3. Xoay đám mây điểm về đúng chiều
+
+Sau khi xác định được sàn nhà, chúng tôi tính vector pháp tuyến của mặt phẳng sàn nhà và xoay toàn bộ đám mây điểm để vector này trỏ xuống dưới theo trục Z. Điều này đảm bảo sàn nhà song song với mặt phẳng XY và hướng xuống dưới theo trục Z.
+
+## 3. Phân tích dữ liệu
+
+### 3.1. Đặc điểm của đám mây điểm ban đầu
+
+- **Nhiễu**: Đám mây điểm ban đầu chứa nhiều điểm nhiễu từ nhiều nguồn khác nhau như sai số cảm biến, phản xạ ánh sáng, đối tượng chuyển động và bụi trong không khí.
+- **Sai chiều**: Hệ tọa độ của đám mây điểm không được căn chỉnh theo quy ước chuẩn, sàn nhà không song song với mặt phẳng XY.
+
+### 3.2. Kết quả xử lý
+
+- **Khử nhiễu**: Phương pháp Statistical Outlier Removal đã loại bỏ hiệu quả các điểm nhiễu, làm cho các bề mặt trở nên mượt mà và rõ ràng hơn.
+- **Xoay về đúng chiều**: Đám mây điểm đã được xoay để sàn nhà song song với mặt phẳng XY và hướng xuống dưới theo trục Z.
+- **Phân đoạn sàn nhà**: Các điểm thuộc sàn nhà đã được xác định chính xác.
+- **Giá trị zmean**: Giá trị zmean của sàn nhà đã được tính toán và lưu vào file.
+
+## 4. Nhận định và đề xuất
+
+### 4.1. Nhận định
+
+- Phương pháp Statistical Outlier Removal hiệu quả hơn Radius Outlier Removal trong việc khử nhiễu cho đám mây điểm này.
+- Thuật toán RANSAC hoạt động tốt trong việc xác định sàn nhà, nhưng có thể gặp khó khăn nếu sàn nhà không phẳng hoặc bị che khuất nhiều.
+- Việc xoay đám mây điểm về đúng chiều giúp dễ dàng hơn trong việc phân tích và xử lý tiếp theo.
+
+### 4.2. Đề xuất cải tiến
+
+- **Phân đoạn đối tượng**: Phát triển thêm các thuật toán để phân đoạn các đối tượng khác trong cảnh như bàn, ghế, tường.
+- **Tái tạo bề mặt**: Áp dụng các thuật toán tái tạo bề mặt để tạo ra mô hình 3D hoàn chỉnh từ đám mây điểm.
+- **Tối ưu hóa hiệu suất**: Cải thiện hiệu suất xử lý cho các đám mây điểm lớn bằng cách sử dụng kỹ thuật song song hoặc GPU.
+
+## 5. Kết luận
+
+Chương trình đã thành công trong việc xử lý đám mây điểm 3D thô để tạo ra một output có ý nghĩa và sẵn sàng cho các ứng dụng tiếp theo. Các phương pháp và thuật toán đã chọn đã chứng minh hiệu quả trong việc khử nhiễu, xoay đám mây điểm về đúng chiều và phân đoạn sàn nhà.
