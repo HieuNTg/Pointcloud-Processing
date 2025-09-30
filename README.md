@@ -85,20 +85,7 @@ Ghi chú: Tên file có thể khác nếu script được cấu hình để ghi 
 2. Chạy:  `python process_pointcloud.py --input sample.ply --output tmp_results`
 3. Kiểm tra xem `tmp_results/output.ply`, `tmp_results/zmean.txt` và `tmp_results/analysis_report.txt` xuất hiện
 
-## Phát triển & Đóng góp
-
-- Muốn báo lỗi / yêu cầu tính năng: tạo issue trên GitHub
-- Muốn gửi PR: fork repository, tạo branch mới, commit thay đổi kèm test nếu có, rồi gửi pull request
-- Coding style: theo chuẩn Python (PEP8). Thêm tests nếu thay đổi logic xử lý đám mây điểm.
-
 ## License
 
 Mặc định README này giả thiết license MIT. Nếu bạn muốn một license khác, hãy thêm file `LICENSE` vào repository. Hiện tại file license chưa được cung cấp.
-
-## Liên hệ
-
-Nếu cần trợ giúp thêm, bỏ thông tin liên hệ hoặc email tại đây (ví dụ: tên và email của tác giả / maintainer).
-
 ---
-
-Cảm ơn bạn đã sử dụng/đóng góp cho dự án! Nếu muốn mình cập nhật README bằng tiếng Anh, hoặc thêm nhãn badges (build / pypi / license), nói mình biết.
